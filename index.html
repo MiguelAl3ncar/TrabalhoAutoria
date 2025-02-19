@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Sistema de Cadastro de Livros</h1>
+    </header>
+    <nav>
+        <a href="index.html">Início</a>
+        <a href="desenvolvedores.html">Sobre o Sistema</a>
+    </nav>
+    <main>
+        <h2>Bem-vindo ao sistema de cadastro de livros!</h2>
+        <p>Preencha o formulário abaixo para registrar um livro.</p>
+        
+        <form id="form-livro">
+            <input type="text" id="titulo" name="titulo" placeholder="Título" required>
+            <input type="text" id="autor" name="autor" placeholder="Autor" required>
+            <input type="submit" value="Cadastrar">
+            <input type="reset" value="Limpar">
+        </form>
+
+        <h2>Lista de Livros Cadastrados</h2>
+        <table border="1">
+            <caption>Livros Cadastrados</caption> 
+            <thead>
+                <tr>
+                    <th onclick="ordenarLivros('titulo')">Título</th>
+                    <th onclick="ordenarLivros('autor')">Autor</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody id="tabela-livros">
+            </tbody>
+        </table>
+    </main>
+    <footer>
+        <ul>
+            <li>IFRN Campus Santa Cruz</li>
+            <li>Sistema de Cadastro de Saúde</li>
+            <li>Prof. Marcelo Figueiredo Barbosa Júnior</li>
+            <li>Alunos: Mariana Ferreira e Miguel Alencar</li>
+        </ul>
+    </footer>
+
+    <script>
+        document.getElementById("form-livro").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            let titulo = document.getElementById("titulo").value;
+            let autor = document.getElementById("autor").value;
+
+            if (titulo && autor) {
+                adicionarLivroNaTabela(titulo, autor);
+                salvarLivroNoLocalStorage(titulo, autor);
+                document.getElementById("form-livro").reset();
+            }
+        });
+
+        function adicionarLivroNaTabela(titulo, autor) {
+            let tabela = document.getElementById("tabela-livros");
+            let linha = `<tr>
+                <td>${titulo}</td>
+                <td>${autor}</td>
+                <td><button onclick="removerLivro('${titulo}')">Remover</button></td>
+            </tr>`;
+            tabela.innerHTML += linha;
+        }
+
+        function salvarLivroNoLocalStorage(titulo, autor) {
+            let livros = JSON.parse(localStorage.getItem("livros")) || [];
+            livros.push({ titulo, autor });
+            localStorage.setItem("livros", JSON.stringify(livros));
+        }
+
+        function carregarLivros() {
+            
+         
+
+            let livros = JSON.parse(localStorage.getItem("livros")) || [
+        { titulo: "Dom Casmurro", autor: "Machado de Assis" },
+        { titulo: "Noite na Taverna", autor: "Álvares de Azevedo" },
+        { titulo: "Corpo Desfeito", autor: "Jarid Arraes" },
+        { titulo: "Memórias Póstumas de Brás Cubas", autor: "Machado de Assis" },
+        { titulo: "Morangos Mofados", autor: "Caio Fernando Abreu" },
+        { titulo: "Quarto de Despejo", autor: "Carolina Maria de Jesus" },
+        { titulo: "A Via-Crucis do Corpo", autor: "Clarice Lispector" },
+        { titulo: "Solitária", autor: "Eliana Alves Cruz" },
+        { titulo: "Iracema", autor: "José de Alencar" },
+        { titulo: "Vidas Secas", autor: "Graciliano Ramos" }
+    ];
+
+            localStorage.setItem("livros", JSON.stringify(livros));
+            atualizarTabela(livros);
+        }
+
+        function atualizarTabela(livros) {
+            let tabela = document.getElementById("tabela-livros");
+            tabela.innerHTML = "";
+
+            livros.forEach(livro => {
+                let linha = `<tr>
+                    <td>${livro.titulo}</td>
+                    <td>${livro.autor}</td>
+                    <td><button onclick="removerLivro('${livro.titulo}')">Remover</button></td>
+                </tr>`;
+                tabela.innerHTML += linha;
+            });
+        }
+
+        function removerLivro(titulo) {
+            let livros = JSON.parse(localStorage.getItem("livros")) || [];
+            livros = livros.filter(livro => livro.titulo !== titulo);
+            localStorage.setItem("livros", JSON.stringify(livros));
+            carregarLivros();
+        }
+
+        function ordenarLivros(campo) {
+            let livros = JSON.parse(localStorage.getItem("livros")) || [];
+
+            livros.sort((a, b) => a[campo].localeCompare(b[campo]));
+
+            localStorage.setItem("livros", JSON.stringify(livros));
+            atualizarTabela(livros);
+        }
+
+        carregarLivros();
+    </script>
+</body>
+</html>
